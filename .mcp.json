@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "pocketbase": {
+      "command": "npx",
+      "args": ["-y", "dynamic-pocketbase-mcp"],
+      "env": {
+        "POCKETBASE_URL": "http://127.0.0.1:8090"
+      }
+    }
+  }
+}

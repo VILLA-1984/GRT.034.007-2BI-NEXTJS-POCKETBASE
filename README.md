@@ -1,5 +1,55 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Exemplo: Autenticação + CRUD com PocketBase
+
+Este projeto tem um exemplo simples de:
+
+- **Cadastro** de usuário (`/register`)
+- **Login** (`/login`)
+- **CRUD de posts** (`/posts`), protegido — só acessível logado
+
+Todo o código fica em [app/login/page.tsx](app/login/page.tsx), [app/register/page.tsx](app/register/page.tsx), [app/posts/page.tsx](app/posts/page.tsx) e o cliente do PocketBase em [lib/pocketbase.ts](lib/pocketbase.ts).
+
+### 1. Rodar o PocketBase
+
+Baixe o PocketBase em https://pocketbase.io/docs/ e rode:
+
+```bash
+./pocketbase serve
+```
+
+Isso abre o painel admin em http://127.0.0.1:8090/_/ e a API em http://127.0.0.1:8090/api/.
+
+A coleção `users` já vem pronta por padrão (autenticação).
+
+### 2. Criar a coleção `posts`
+
+No painel admin (http://127.0.0.1:8090/_/), crie uma nova coleção chamada `posts` com os campos:
+
+| Campo   | Tipo     | Observação                          |
+|---------|----------|--------------------------------------|
+| title   | Text     | obrigatório                          |
+| content | Text     | obrigatório                          |
+| user    | Relation | relaciona com a coleção `users`, obrigatório |
+
+Depois, na aba **API Rules** da coleção `posts`, defina as regras para que cada usuário só veja/edite os próprios posts:
+
+- **List/Search**: `user = @request.auth.id`
+- **View**: `user = @request.auth.id`
+- **Create**: `@request.auth.id != ""`
+- **Update**: `user = @request.auth.id`
+- **Delete**: `user = @request.auth.id`
+
+### 3. Rodar o Next.js
+
+```bash
+pnpm dev
+```
+
+Acesse http://localhost:3000, crie uma conta em `/register` e teste o CRUD em `/posts`.
+
+> O endereço do PocketBase está fixo em `lib/pocketbase.ts` (`http://127.0.0.1:8090`). Se rodar em outra porta/host, atualize esse arquivo.
+
 ## Getting Started
 
 First, run the development server:
